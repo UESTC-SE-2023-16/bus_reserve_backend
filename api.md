@@ -1,0 +1,747 @@
+## API文档
+
+### 用户服务
+
+****
+
+#### 查看所有用户
+
+- URL：/user/getUserInfo/
+- 请求方式：get
+- 请求参数：无
+
+- 返回结果：
+
+| 字段 |       备注       |
+| :--: | :--------------: |
+| data | 返回用户信息序列 |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": [
+        {
+            "id": 1,
+            "name": "admin",
+            "password": "admin",
+            "is_admin": true
+        },
+        {
+            "id": 2,
+            "name": "zhao",
+            "password": "7846451",
+            "is_admin": false
+        }
+    ]
+}
+```
+
+#### 注册用户
+
+- URL:/user/register
+- 请求方式：post
+- 请求参数
+
+|   字段    |   备注   | 是否必须 |
+| :-------: | :------: | :------: |
+|   name    |  用户名  |    是    |
+| passworod | 用户密码 |    是    |
+
+- 返回结果：
+
+|   字段   |       备注        |
+| :------: | :---------------: |
+|    id    |  自动生成自增id   |
+|   name   |       名称        |
+| password |       密码        |
+| is_admin | 固定为false，只读 |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 23,
+        "name": "gun",
+        "password": "4631566",
+        "is_admin": false
+    }
+}
+```
+
+插入失败：
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "name": [
+            "user info with this name already exists."
+        ]
+    }
+}
+```
+
+
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "name": [
+            "This field may not be blank."
+        ]
+    }
+}
+```
+
+
+
+#### 获取单个用户信息
+
+- url :/user/<str:username>
+
+  例如：
+
+  ```http
+  http://xxx.xxx:xxxx/user/GAO/
+  ```
+
+- 请求方式：get
+
+- 无参数
+
+- 返回结果
+
+|   字段   |      备注      |
+| :------: | :------------: |
+|    id    | 自动生成自增id |
+|   name   |      名称      |
+| password |      密码      |
+| is_admin |   false/true   |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 24,
+        "name": "GAO",
+        "password": "4631566",
+        "is_admin": false
+    }
+}
+```
+
+查找失败(没有这个用户名)：
+
+```json
+{
+    "msg": "服务器错误:UserInfo matching query does not exist.",
+    "code": 500,
+    "data": {}
+}
+```
+
+
+
+#### 更新用户信息
+
+- url：/user/<str:username>
+
+- 例如：
+
+  ```http
+  http://xxx.xxx:xxxx/user/GAO/
+  ```
+
+- 请求方式：put
+
+- 请求参数
+
+|   字段   |   备注   | 是否必须 |
+| :------: | :------: | :------: |
+|   name   |  用户名  |    是    |
+| password | 用户密码 |    是    |
+
+- 返回结果
+
+|   字段   |      备注      |
+| :------: | :------------: |
+|    id    | 自动生成自增id |
+|   name   |      名称      |
+| password |      密码      |
+| is_admin |   false/true   |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 24,
+        "name": "GAO",
+        "password": "789456",
+        "is_admin": false
+    }
+}
+```
+
+#### 删除用户账户
+
+- url：/user/<str:username>
+
+- 例如：
+
+  ```http
+  http://xxx.xxx:xxxx/user/GAO/
+  ```
+
+- 请求方式：delete
+
+- 请求参数：无
+
+- 返回结果
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": "Success"
+}
+```
+
+注意删除用户账户后对应的车票也被一并删除
+
+### 车次管理
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#### 查看所有车次
+
+- URL：/bus/getBusInfo/
+- 请求方式：get
+- 请求参数：无
+
+- 返回结果：
+
+| 字段 |       备注       |
+| :--: | :--------------: |
+| data | 返回车次信息序列 |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": [
+        {
+            "id": 3,
+            "busnum": "b19",
+            "depart": "shanghai",
+            "destination": "beijing",
+            "departtime": "2022-09-07",
+            "seats": 35
+        },
+        {
+            "id": 4,
+            "busnum": "b17",
+            "depart": "beijing",
+            "destination": "shanghai",
+            "departtime": "2022-09-07",
+            "seats": 35
+        }
+    ]
+}
+```
+
+#### 注册车次
+
+- URL:/bus/register
+- 请求方式：post
+- 请求参数
+
+|    字段     |   备注   |  是否必须  |
+| :---------: | :------: | :--------: |
+|   busnum    | 车辆编号 |     是     |
+|   depart    |   始发   |     是     |
+| destination |   终点   |     是     |
+| departtime  | 出发时间 |     是     |
+|    seats    |   座位   | 否，默认35 |
+
+- 返回结果：
+
+|    字段     |      备注      |
+| :---------: | :------------: |
+|     id      | 自动生成自增id |
+|   busnum    |    车辆编号    |
+|   depart    |      始发      |
+| destination |      终点      |
+| departtime  |    出发时间    |
+|    seats    |      座位      |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 3,
+        "busnum": "b19",
+        "depart": "shanghai",
+        "destination": "beijing",
+        "departtime": "2022-09-07",
+        "seats": 35
+    }
+}
+```
+
+插入失败：
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "busnum": [
+            "bus info with this busnum already exists."
+        ]
+    }
+}
+```
+
+
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "busnum": [
+            "This field may not be blank."
+        ]
+    }
+}
+```
+
+
+
+#### 获取单个车次信息
+
+- url:/bus/<str:b_id>/
+
+  例如：
+
+  ```http
+  http://xxx.xxx:xxxx/bus/2/
+  ```
+
+- 请求方式：get
+
+- 无参数
+
+- 返回结果
+
+|    字段     |   备注   |
+| :---------: | :------: |
+|   busnum    | 车辆编号 |
+|   depart    |   始发   |
+| destination |   终点   |
+| departtime  | 出发时间 |
+|    seats    |   座位   |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 2,
+        "busnum": "b17",
+        "depart": "beijing",
+        "destination": "shanghai",
+        "departtime": "2022-09-06",
+        "seats": 35
+    }
+}
+```
+
+查找失败(没有这个车次id)：
+
+```json
+{
+    "msg": "服务器错误:BusInfo matching query does not exist.",
+    "code": 500,
+    "data": {}
+}
+```
+
+
+
+#### 更新车次信息
+
+- url:/bus/<str:b_id>/
+
+  例如：
+
+  ```http
+  http://xxx.xxx:xxxx/bus/2/
+  ```
+
+- 请求方式：put
+
+- 请求参数
+
+|    字段     |   备注   |  是否必须  |
+| :---------: | :------: | :--------: |
+|   busnum    | 车辆编号 |     是     |
+|   depart    |   始发   |     是     |
+| destination |   终点   |     是     |
+| departtime  | 出发时间 |     是     |
+|    seats    |   座位   | 否，默认35 |
+
+- 返回结果
+
+|    字段     |      备注      |
+| :---------: | :------------: |
+|     id      | 自动生成自增id |
+|   busnum    |    车辆编号    |
+|   depart    |      始发      |
+| destination |      终点      |
+| departtime  |    出发时间    |
+|    seats    |      座位      |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 2,
+        "busnum": "b17",
+        "depart": "beijing",
+        "destination": "shanghai",
+        "departtime": "2022-09-11",
+        "seats": 35
+    }
+}
+```
+
+#### 删除车次
+
+- url:/bus/<str:b_id>/
+
+  例如：
+
+  ```http
+  http://xxx.xxx:xxxx/bus/2/
+  ```
+
+- 请求方式：delete
+
+- 请求参数：无
+
+- 返回结果
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": "Success"
+}
+```
+
+注意删除车次后对应的车票也被一并删除
+
+### 车票管理
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+#### 车票状态表
+
+| 状态符号 | 表示状态         |
+| -------- | ---------------- |
+| “S”      | 提交（未缴费）   |
+| “N”      | 正常（已缴费）   |
+| “F”      | 完成             |
+| “T”      | 取消             |
+| “I”      | 无效（其它情况） |
+
+#### 查看用户对应的车票
+
+- URL：ticket/getUserTicketInfo/<str:u_id>/
+
+- 例如：
+
+  ```http
+  http://127.0.0.1:8000/ticket/getUserTicketInfo/2/
+  ```
+
+- 请求方式：get
+
+- 请求参数：无
+
+- 返回结果：
+
+| 字段 |       备注       |
+| :--: | :--------------: |
+| data | 返回车票信息序列 |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": [
+        {
+            "id": 2,
+            "status": "S",
+            "u_id": 2,
+            "b_id": 3
+        },
+        {
+            "id": 4,
+            "status": "S",
+            "u_id": 2,
+            "b_id": 4
+        }
+    ]
+}
+```
+
+#### 查看车次对应的车票
+
+- URL：ticket/getBusTicketInfo/<str:b_id>/
+
+- 例如：
+
+  ```http
+  http://127.0.0.1:8000/ticket/getBusTicketInfo/4/
+  ```
+
+- 请求方式：get
+
+- 请求参数：无
+
+- 返回结果：
+
+| 字段 |       备注       |
+| :--: | :--------------: |
+| data | 返回车票信息序列 |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": [
+        {
+            "id": 4,
+            "status": "S",
+            "u_id": 2,
+            "b_id": 4
+        },
+        {
+            "id": 6,
+            "status": "N",
+            "u_id": 3,
+            "b_id": 4
+        }
+    ]
+}
+```
+
+#### 注册车票
+
+- URL:/ticket/register/
+- 请求方式：post
+- 请求参数
+
+|  字段  |  备注  |           是否必须           |
+| :----: | :----: | :--------------------------: |
+|  b_id  | 车辆id | 用户表外键，用户表中必须存在 |
+|  u_id  | 用户id | 车次表外键，车次表中必须存在 |
+| status |  状态  |        不必须，默认S         |
+
+- 返回结果：
+
+|  字段  |       备注        |
+| :----: | :---------------: |
+|   id   |  自动生成自增id   |
+| status | 状态信息，默认为S |
+|  u_id  |    用户表外键     |
+|  b_id  |    车次表外键     |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 7,
+        "status": "S",
+        "u_id": 19,
+        "b_id": 4
+    }
+}
+```
+
+插入失败：
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "u_id": [
+            "Invalid pk \"52\" - object does not exist."
+        ]
+    }
+}
+```
+
+
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "u_id": [
+            "This field may not be null."
+        ]
+    }
+}
+```
+
+
+
+#### 获取单个车票信息
+
+- url:/ticket/<str:t_id>/
+
+  例如：
+
+  ```http
+  http://127.0.0.1:8000/ticket/4/
+  ```
+
+- 请求方式：get
+
+- 无参数
+
+- 返回结果
+
+|  字段  |      备注      |
+| :----: | :------------: |
+|   id   | 自动生成自增id |
+| status |    状态信息    |
+|  u_id  |   用户表外键   |
+|  b_id  |   车次表外键   |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 4,
+        "status": "T",
+        "u_id": 2,
+        "b_id": 4
+    }
+}
+```
+
+查找失败(没有这个车票id)：
+
+```json
+{
+    "msg": "服务器错误:TicketInfo matching query does not exist.",
+    "code": 500,
+    "data": {}
+}
+```
+
+
+
+#### 更新车票信息（更改状态）
+
+- url:/ticket/<str:t_id>/
+
+  例如：
+
+  ```http
+  http://127.0.0.1:8000/ticket/4/
+  ```
+
+- 请求方式：put
+
+- 请求参数
+
+|  字段  |  备注  |           是否必须           |
+| :----: | :----: | :--------------------------: |
+|  b_id  | 车辆id | 用户表外键，用户表中必须存在 |
+|  u_id  | 用户id | 车次表外键，车次表中必须存在 |
+| status |  状态  |     不必须，不输入不更改     |
+
+- 返回结果
+
+|  字段  |        备注        |
+| :----: | :----------------: |
+|   id   |   自动生成自增id   |
+| status | 状态信息（已更改） |
+|  u_id  |     用户表外键     |
+|  b_id  |     车次表外键     |
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "id": 4,
+        "status": "N",
+        "u_id": 2,
+        "b_id": 4
+    }
+}
+```
+
+更改失败（状态不在“SINFT”中）
+
+```JSON
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "status": [
+            "\"A\" is not a valid choice."
+        ]
+    }
+}
+```
+
+
+
+#### 删除车票（将车票从数据库中删除而不是标记为T：取消）
+
+- url:/ticket/<str:t_id>/
+
+  例如：
+
+  ```http
+  http://127.0.0.1:8000/ticket/4/
+  ```
+
+- 请求方式：delete
+
+- 请求参数：无
+
+- 返回结果
+
+```json
+{
+    "msg": "请求成功",
+    "code": 200,
+    "data": "Success"
+}
+```
+
+
+
+
+
