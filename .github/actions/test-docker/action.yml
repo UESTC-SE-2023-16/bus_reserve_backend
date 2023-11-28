@@ -13,6 +13,9 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: permissions
+      run: chmod +x ${{ github.action_path }}/test_docker.sh
+      shell: bash
     - name: run test
       run: |
         ${{ github.action_path }}/test_docker.sh ${{ inputs.docker-image-name}} ${{ inputs.wait-time }}
