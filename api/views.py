@@ -1,11 +1,9 @@
-from django.shortcuts import render, HttpResponse
-from django.views import View
+from api import models
+from loguru import logger
 from rest_framework import serializers
 from rest_framework.views import APIView
+from django.shortcuts import HttpResponse
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView
-from rest_framework.viewsets import ModelViewSet
-from api import models
 
 # Create your views here.
 
@@ -17,26 +15,26 @@ from api import models
 # 三个序列化器类
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = '__all__'
+        fields = "__all__"
         model = models.UserInfo
 
 
 class BusInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = '__all__'
+        fields = "__all__"
         model = models.BusInfo
 
 
 class TicketInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = '__all__'
+        fields = "__all__"
         model = models.TicketInfo
 
 
 # 查询所有用户信息
 class CheckUserInfo(APIView):
     def get(self, request):
-        print(request.user)
+        logger.debug(request.user)
         user_list = models.UserInfo.objects.all()
 
         serializer = UserInfoSerializer(instance=user_list, many=True)

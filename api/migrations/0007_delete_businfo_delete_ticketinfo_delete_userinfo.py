@@ -4,19 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0006_alter_businfo_id_alter_userinfo_id'),
+        ("api", "0006_alter_businfo_id_alter_userinfo_id"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='BusInfo',
+            name="BusInfo",
         ),
         migrations.DeleteModel(
-            name='TicketInfo',
+            name="TicketInfo",
         ),
         migrations.DeleteModel(
-            name='UserInfo',
+            name="UserInfo",
         ),
     ]

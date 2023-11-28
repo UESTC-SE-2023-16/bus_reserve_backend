@@ -1,11 +1,11 @@
 # 自定义异常处理
-from rest_framework.views import exception_handler
-from rest_framework.views import Response
 from rest_framework import status
+from rest_framework.views import Response, exception_handler
 
 
 # 将仅针对由引发的异常生成的响应调用异常处理程序。它不会用于视图直接返回的任何响应
-# 需要在setting中配置这个异常处理方法,并且异常返回的respose对象还会传到默认返回的json的renderer类中，在setting中drf配置中的DEFAULT_RENDERER_CLASSES
+# 需要在setting中配置这个异常处理方法,并且异常返回的respose对象还会传到默认返回的json的renderer类中，
+# 在setting中drf配置中的DEFAULT_RENDERER_CLASSES
 # 如果未声明，会采用默认的方式，如下
 #
 # REST_FRAMEWORK = {
@@ -31,14 +31,20 @@ def custom_exception_handler(exc, context):
     # 如果response响应对象为空，则设置message这个key的值，并将状态码设为500
     # 如果response响应对象不为空，则则设置message这个key的值，并将使用其本身的状态码
     if response is None:
-        return Response({
-            'message': '服务器错误:{exc}'.format(exc=exc)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR, exception=True)
+        return Response(
+            {"message": f"服务器错误:{exc}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            exception=True,
+        )
 
     else:
         # print('123 = %s - %s - %s' % (context['view'], context['request'].method, exc))
-        return Response({
-            'message': '服务器错误:{exc}'.format(exc=exc),
-        }, status=response.status_code, exception=True)
+        return Response(
+            {
+                "message": f"服务器错误:{exc}",
+            },
+            status=response.status_code,
+            exception=True,
+        )
 
     return response
