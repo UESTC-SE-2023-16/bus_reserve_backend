@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:25526
+    volumes:
+      - .:/app
+      - ./db.sqlite3:/app/db.sqlite3
+    ports:
+      - 25526:25526
