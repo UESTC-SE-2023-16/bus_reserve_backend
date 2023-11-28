@@ -18,4 +18,5 @@ COPY . .
 EXPOSE 8000
 
 # 设置 Docker 镜像的默认命令
+RUN python manage.py migrate
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
