@@ -76,15 +76,15 @@ WSGI_APPLICATION = "djangoProject.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "mssql",
-        "NAME": "test_django",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "db.sqlite3",
         "USER": "sa",
         "PASSWORD": "62cd53c18",
         "HOST": "LAPTOP-0HUTQF5L",
         "PORT": "1433",
-        "OPTIONS": {
-            "driver": "ODBC Driver 17 for SQL Server",
-        },
+        # "OPTIONS": {
+        #     "driver": "ODBC Driver 17 for SQL Server",
+        # },
     },
 }
 
