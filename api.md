@@ -75,7 +75,7 @@
 ```json
 {
     "msg": "请求成功",
-    "code": 200,
+    "code": 400,
     "data": {
         "name": [
             "user info with this name already exists."
@@ -89,7 +89,7 @@
 ```json
 {
     "msg": "请求成功",
-    "code": 200,
+    "code": 400,
     "data": {
         "name": [
             "This field may not be blank."
@@ -189,6 +189,20 @@
 }
 ```
 
+```json
+{
+    "msg": "请求成功",
+    "code": 400,
+    "data": {
+        "password": [
+            "This field may not be blank."
+        ]
+    }
+}
+```
+
+
+
 #### 删除用户账户
 
 - url：/user/<str:username>
@@ -242,15 +256,39 @@
             "depart": "shanghai",
             "destination": "beijing",
             "departtime": "2022-09-07",
-            "seats": 35
+            "seats": 35,
+            "remained_seats": 3,
+            "fare": 20
         },
         {
             "id": 4,
             "busnum": "b17",
             "depart": "beijing",
             "destination": "shanghai",
+            "departtime": "2022-09-11",
+            "seats": 34,
+            "remained_seats": 39,
+            "fare": 20
+        },
+        {
+            "id": 5,
+            "busnum": "B23",
+            "depart": "chengdu",
+            "destination": "shanghai",
             "departtime": "2022-09-07",
-            "seats": 35
+            "seats": 35,
+            "remained_seats": 35,
+            "fare": 20
+        },
+        {
+            "id": 6,
+            "busnum": "b57",
+            "depart": "chengdu",
+            "destination": "shanghai",
+            "departtime": "2022-09-07",
+            "seats": 35,
+            "remained_seats": 35,
+            "fare": 20
         }
     ]
 }
@@ -262,46 +300,52 @@
 - 请求方式：post
 - 请求参数
 
-|    字段     |   备注   |  是否必须  |
-| :---------: | :------: | :--------: |
-|   busnum    | 车辆编号 |     是     |
-|   depart    |   始发   |     是     |
-| destination |   终点   |     是     |
-| departtime  | 出发时间 |     是     |
-|    seats    |   座位   | 否，默认35 |
+|      字段      |   备注   |  是否必须  |
+| :------------: | :------: | :--------: |
+|     busnum     | 车辆编号 |     是     |
+|     depart     |   始发   |     是     |
+|  destination   |   终点   |     是     |
+|   departtime   | 出发时间 |     是     |
+|     seats      |   座位   | 否，默认35 |
+| remained_seats | 剩余座位 | 否，默认35 |
+|      fare      |   票价   | 否，默认20 |
 
 - 返回结果：
 
-|    字段     |      备注      |
-| :---------: | :------------: |
-|     id      | 自动生成自增id |
-|   busnum    |    车辆编号    |
-|   depart    |      始发      |
-| destination |      终点      |
-| departtime  |    出发时间    |
-|    seats    |      座位      |
+|      字段      |      备注      |
+| :------------: | :------------: |
+|       id       | 自动生成自增id |
+|     busnum     |    车辆编号    |
+|     depart     |      始发      |
+|  destination   |      终点      |
+|   departtime   |    出发时间    |
+|     seats      |      座位      |
+| remained_seats |    剩余座位    |
+|      fare      |      票价      |
 
 ```json
 {
     "msg": "请求成功",
     "code": 200,
     "data": {
-        "id": 3,
-        "busnum": "b19",
-        "depart": "shanghai",
-        "destination": "beijing",
+        "id": 6,
+        "busnum": "b56",
+        "depart": "chengdu",
+        "destination": "shanghai",
         "departtime": "2022-09-07",
-        "seats": 35
+        "seats": 35,
+        "remained_seats": 35,
+        "fare":20
     }
 }
 ```
 
-插入失败：
+插入失败(bus num不能重复)：
 
 ```json
 {
     "msg": "请求成功",
-    "code": 200,
+    "code": 400,
     "data": {
         "busnum": [
             "bus info with this busnum already exists."
@@ -310,12 +354,12 @@
 }
 ```
 
-
+插入失败(格式不正确，缺少busbum字段)：
 
 ```json
 {
     "msg": "请求成功",
-    "code": 200,
+    "code": 400,
     "data": {
         "busnum": [
             "This field may not be blank."
@@ -342,25 +386,29 @@
 
 - 返回结果
 
-|    字段     |   备注   |
-| :---------: | :------: |
-|   busnum    | 车辆编号 |
-|   depart    |   始发   |
-| destination |   终点   |
-| departtime  | 出发时间 |
-|    seats    |   座位   |
+|      字段      |   备注   |
+| :------------: | :------: |
+|     busnum     | 车辆编号 |
+|     depart     |   始发   |
+|  destination   |   终点   |
+|   departtime   | 出发时间 |
+|     seats      |   座位   |
+| remained_seats | 剩余座位 |
+|      fare      |   票价   |
 
 ```json
 {
     "msg": "请求成功",
     "code": 200,
     "data": {
-        "id": 2,
-        "busnum": "b17",
-        "depart": "beijing",
+        "id": 6,
+        "busnum": "b56",
+        "depart": "chengdu",
         "destination": "shanghai",
-        "departtime": "2022-09-06",
-        "seats": 35
+        "departtime": "2022-09-07",
+        "seats": 35,
+        "remained_seats": 35,
+        "fare":20
     }
 }
 ```
@@ -391,39 +439,61 @@
 
 - 请求参数
 
-|    字段     |   备注   |  是否必须  |
-| :---------: | :------: | :--------: |
-|   busnum    | 车辆编号 |     是     |
-|   depart    |   始发   |     是     |
-| destination |   终点   |     是     |
-| departtime  | 出发时间 |     是     |
-|    seats    |   座位   | 否，默认35 |
+|      字段      |   备注   |     是否必须     |
+| :------------: | :------: | :--------------: |
+|     busnum     | 车辆编号 |        是        |
+|     depart     |   始发   |        是        |
+|  destination   |   终点   |        是        |
+|   departtime   | 出发时间 |        是        |
+|     seats      |   座位   | 否，不输入不改变 |
+| remained_seats | 剩余座位 | 否，不输入不改变 |
+|      fare      |   票价   | 否，不输入不改变 |
 
 - 返回结果
 
-|    字段     |      备注      |
-| :---------: | :------------: |
-|     id      | 自动生成自增id |
-|   busnum    |    车辆编号    |
-|   depart    |      始发      |
-| destination |      终点      |
-| departtime  |    出发时间    |
-|    seats    |      座位      |
+|      字段      |      备注      |
+| :------------: | :------------: |
+|       id       | 自动生成自增id |
+|     busnum     |    车辆编号    |
+|     depart     |      始发      |
+|  destination   |      终点      |
+|   departtime   |    出发时间    |
+|     seats      |      座位      |
+| remained_seats |    剩余座位    |
+|      fare      |      票价      |
 
 ```json
 {
     "msg": "请求成功",
     "code": 200,
     "data": {
-        "id": 2,
-        "busnum": "b17",
-        "depart": "beijing",
+        "id": 6,
+        "busnum": "b57",
+        "depart": "chengdu",
         "destination": "shanghai",
-        "departtime": "2022-09-11",
-        "seats": 35
+        "departtime": "2022-09-07",
+        "seats": 35,
+        "remained_seats": 35,
+        "fare":20
     }
 }
 ```
+
+更新失败（缺少字段）
+
+```json
+{
+    "msg": "请求成功",
+    "code": 400,
+    "data": {
+        "depart": [
+            "This field is required."
+        ]
+    }
+}
+```
+
+
 
 #### 删除车次
 
@@ -465,6 +535,10 @@
 | “T”      | 取消             |
 | “I”      | 无效（其它情况） |
 
+状态为S、N时占用1个座位
+
+状态为F、T、I时不占用座位
+
 #### 查看用户对应的车票
 
 - URL：ticket/getUserTicketInfo/<str:u_id>/
@@ -494,13 +568,33 @@
             "id": 2,
             "status": "S",
             "u_id": 2,
-            "b_id": 3
+            "b_id": 3,
+            "bus_info": {
+                "id": 3,
+                "busnum": "b19",
+                "depart": "shanghai",
+                "destination": "beijing",
+                "departtime": "2022-09-07",
+                "seats": 35,
+                "remained_seats": 3,
+                "fare":20
+            }
         },
         {
-            "id": 4,
-            "status": "S",
+            "id": 5,
+            "status": "F",
             "u_id": 2,
-            "b_id": 4
+            "b_id": 4,
+            "bus_info": {
+                "id": 4,
+                "busnum": "b17",
+                "depart": "beijing",
+                "destination": "shanghai",
+                "departtime": "2022-09-11",
+                "seats": 34,
+                "remained_seats": 39,
+                "fare":20
+            }
         }
     ]
 }
@@ -553,11 +647,11 @@
 - 请求方式：post
 - 请求参数
 
-|  字段  |  备注  |           是否必须           |
-| :----: | :----: | :--------------------------: |
-|  b_id  | 车辆id | 用户表外键，用户表中必须存在 |
-|  u_id  | 用户id | 车次表外键，车次表中必须存在 |
-| status |  状态  |        不必须，默认S         |
+|  字段  |  备注  |                           是否必须                           |
+| :----: | :----: | :----------------------------------------------------------: |
+|  b_id  | 车辆id |                 用户表外键，用户表中必须存在                 |
+|  u_id  | 用户id |                 车次表外键，车次表中必须存在                 |
+| status |  状态  | **使用本接口时，设定为S（提交）、N（已支付）符合逻辑，不输入默认S** |
 
 - 返回结果：
 
@@ -661,6 +755,13 @@
 
 #### 更新车票信息（更改状态）
 
+对于状态的更新，如下的改变符合逻辑：
+
+| 更改前状态  | 更改后状态                              |
+| ----------- | --------------------------------------- |
+| S（提交）   | N（已支付）、T（取消）、I（其它情况）   |
+| N（已支付） | F（行程结束）、T（取消）、I（其它情况） |
+
 - url:/ticket/<str:t_id>/
 
   例如：
@@ -706,7 +807,7 @@
 ```JSON
 {
     "msg": "请求成功",
-    "code": 200,
+    "code": 400,
     "data": {
         "status": [
             "\"A\" is not a valid choice."

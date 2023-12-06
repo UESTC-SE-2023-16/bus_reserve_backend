@@ -2,7 +2,6 @@ from api import models
 from loguru import logger
 from rest_framework import serializers
 from rest_framework.views import APIView
-from django.shortcuts import HttpResponse
 from rest_framework.response import Response
 
 # Create your views here.
@@ -51,7 +50,9 @@ class User_register(APIView):
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.errors)
+            response = Response(serializer.errors)
+            response.status_code = 400
+            return response
 
 
 # 操作一个用户
@@ -74,16 +75,30 @@ class UserDetailView(APIView):
             return Response(serializer.data)
 
         else:
-            return Response(serializer.errors)
+            response = Response(serializer.errors)
+            response.status_code = 400
+            return response
 
     # 删除用户
     def delete(self, request, username):
         the_user = models.UserInfo.objects.filter(name=username)
         if len(the_user) == 0:
-            return HttpResponse("没有这个用户")
+            response = Response("没有这个用户")
+            response.status_code = 400
+            return response
         else:
+            user_info = UserInfoSerializer(instance=the_user.first(), many=False)
+            ticket_list = models.TicketInfo.objects.filter(u_id=user_info.data['id'])
+            print(ticket_list)
+            ticket_info_list = TicketInfoSerializer(instance=ticket_list, many=True)
+            print(ticket_info_list.data)
+            for ticket in ticket_info_list.data:
+                a = TicketDetailView()
+                a.delete(request, ticket['id'])
             the_user.delete()
-            return Response("Success")
+            response = Response("SUCCESS")
+            response.status_code = 400
+            return response
 
 
 # 查询所有汽车信息
@@ -105,7 +120,9 @@ class Bus_register(APIView):
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.errors)
+            response = Response(serializer.errors)
+            response.status_code = 400
+            return response
 
 
 # 操作一个车次
@@ -127,12 +144,41 @@ class BusDetailView(APIView):
             return Response(serializer.data)
 
         else:
-            return Response(serializer.errors)
+            response = Response(serializer.errors)
+            response.status_code = 400
+            return response
 
     # 删除车次
     def delete(self, request, b_id):
         models.BusInfo.objects.filter(id=b_id).delete()
         return Response("Success")
+
+class operate_bus_users:
+    def add_users(self, b_id):
+        update_businfo = models.BusInfo.objects.get(id=b_id)
+        bus_serializer = BusInfoSerializer(instance=update_businfo, many=False).data
+        bus_serializer['remained_seats'] = bus_serializer['remained_seats'] - 1
+        print(bus_serializer['remained_seats'])
+        new_bus_serializer = BusInfoSerializer(instance=update_businfo, data=bus_serializer)
+        if new_bus_serializer.is_valid():
+            new_bus_serializer.save()
+        else:
+            response = Response(new_bus_serializer.errors)
+            response.status_code = 400
+            return response
+
+    def delete_users(self, b_id):
+        update_businfo = models.BusInfo.objects.get(id=b_id)
+        bus_serializer = BusInfoSerializer(instance=update_businfo, many=False).data
+        bus_serializer['remained_seats'] = bus_serializer['remained_seats'] + 1
+        new_bus_serializer = BusInfoSerializer(instance=update_businfo, data=bus_serializer)
+        if new_bus_serializer.is_valid():
+            new_bus_serializer.save()
+            return Response(new_bus_serializer.data)
+        else:
+            response = Response(new_bus_serializer.errors)
+            response.status_code = 400
+            return response
 
 
 # 查询所有同一用户车票信息
@@ -141,6 +187,10 @@ class CheckUserTicketInfo(APIView):
         ticket_list = models.TicketInfo.objects.filter(u_id=u_id)
 
         serializer = TicketInfoSerializer(instance=ticket_list, many=True)
+        for ticket in serializer.data:
+            bus = models.BusInfo.objects.get(id=ticket['b_id'])
+            bus_serializer = BusInfoSerializer(instance=bus, many=False)
+            ticket['bus_info'] = bus_serializer.data
         return Response(serializer.data)
 
 
@@ -160,10 +210,16 @@ class Ticket_register(APIView):
         # 校验数据
         if serializer.is_valid():
             # new_user = models.UserInfo.objects.create(**serializer.validated_data)
+            a = operate_bus_users()
+            response = a.add_users(b_id=request.data['b_id'])
+            if response.status_code == 400:
+                return response
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.errors)
+            response = Response(serializer.errors)
+            response.status_code = 400
+            return response
 
 
 # 操作一个车票
@@ -181,13 +237,31 @@ class TicketDetailView(APIView):
         serializer = TicketInfoSerializer(instance=update_ticketinfo, data=request.data)
 
         if serializer.is_valid():
+            check_ticketinfo = models.TicketInfo.objects.get(id=t_id)
+            ticket_info = TicketInfoSerializer(instance=check_ticketinfo, many=False).data
+            if ticket_info['status'] == 'F' or ticket_info['status'] == 'T' or ticket_info['status'] == 'I':
+                a = operate_bus_users()
+                response = a.delete_users(b_id=request.data['b_id'])
+                if response.status_code == 400:
+                    return response
             serializer.save()
             return Response(serializer.data)
 
         else:
-            return Response(serializer.errors)
+            response = Response(serializer.errors)
+            response.status_code = 400
+            return response
 
     # 删除车票信息
     def delete(self, request, t_id):
-        models.TicketInfo.objects.filter(id=t_id).delete()
+
+        ticket_model = models.TicketInfo.objects.get(id=t_id)
+
+        ticket_info = TicketInfoSerializer(instance=ticket_model, many=False).data
+        b_id = ticket_info['b_id']
+        a = operate_bus_users()
+        response = a.delete_users(b_id=b_id)
+        if response.status_code == 400:
+            return response
+        ticket_model.delete()
         return Response("Success")

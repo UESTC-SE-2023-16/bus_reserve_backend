@@ -17,6 +17,8 @@ class BusInfo(models.Model):
     destination = models.CharField(max_length=32)
     departtime = models.CharField(max_length=32)
     seats = models.IntegerField(default=35)
+    remained_seats = models.PositiveIntegerField(default=35)
+    fare = models.IntegerField(default=20)
 
 
 class TicketStatus(models.TextChoices):
