@@ -69,7 +69,7 @@ class UserDetailView(APIView):
     def put(self, request, username):
         update_userinfo = models.UserInfo.objects.get(name=username)
         # 序列化器对象
-        serializer = UserInfoSerializer(instance=update_userinfo, data=request.data)
+        serializer = UserInfoSerializer(instance=update_userinfo, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -138,7 +138,7 @@ class BusDetailView(APIView):
     def put(self, request, b_id):
         update_businfo = models.BusInfo.objects.get(id=b_id)
         # 序列化器对象
-        serializer = BusInfoSerializer(instance=update_businfo, data=request.data)
+        serializer = BusInfoSerializer(instance=update_businfo, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -237,7 +237,7 @@ class TicketDetailView(APIView):
     def put(self, request, t_id):
         update_ticketinfo = models.TicketInfo.objects.get(id=t_id)
         # 序列化器对象
-        serializer = TicketInfoSerializer(instance=update_ticketinfo, data=request.data)
+        serializer = TicketInfoSerializer(instance=update_ticketinfo, data=request.data, partial=True)
 
         if serializer.is_valid():
             check_ticketinfo = models.TicketInfo.objects.get(id=t_id)
