@@ -71,7 +71,7 @@
 ```json
 {
     "msg": "Password is needed",
-    "code": 401
+    "code": 400
 }
 ```
 
@@ -116,7 +116,7 @@ url :/user/login/
 ```json
 {
     "msg": "Login failure",
-    "code": 401
+    "code": 400
 }
 ```
 

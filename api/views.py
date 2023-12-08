@@ -76,9 +76,9 @@ class LoginView(APIView):
             if check_password(password, serializer.data['password']):
                 return JsonResponse({'msg': 'Login successful', 'code': 200}, status=200)
             else:
-                return JsonResponse({'msg': 'Login failure', 'code': 401}, status=401)
+                return JsonResponse({'msg': 'Login failure', 'code': 400}, status=400)
         else:
-            return JsonResponse({'msg': 'Invalid credentials', 'code': 401}, status=401)
+            return JsonResponse({'msg': 'Invalid credentials', 'code': 400}, status=400)
 
 
 # 操作一个用户
