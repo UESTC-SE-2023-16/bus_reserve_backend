@@ -43,48 +43,39 @@
 - 请求方式：post
 - 请求参数
 
-|   字段    |   备注   | 是否必须 |
-| :-------: | :------: | :------: |
-|   name    |  用户名  |    是    |
-| passworod | 用户密码 |    是    |
+|   字段   |   备注   | 是否必须 |
+| :------: | :------: | :------: |
+|   name   |  用户名  |    是    |
+| password | 用户密码 |    是    |
 
-- 返回结果：
+- ~~返回结果：~~
 
-|   字段   |       备注        |
-| :------: | :---------------: |
-|    id    |  自动生成自增id   |
-|   name   |       名称        |
-| password |       密码        |
-| is_admin | 固定为false，只读 |
+|     字段     |         备注          |
+| :----------: | :-------------------: |
+|    ~~id~~    |  ~~自动生成自增id~~   |
+|   ~~name~~   |       ~~名称~~        |
+| ~~password~~ |       ~~密码~~        |
+| ~~is_admin~~ | ~~固定为false，只读~~ |
 
 ```json
 {
-    "msg": "请求成功",
-    "code": 200,
-    "data": {
-        "id": 23,
-        "name": "gun",
-        "password": "4631566",
-        "is_admin": false
-    }
+    "msg": "register success",
+    "code": 200
 }
 ```
 
 插入失败：
 
+（没有密码字段）
+
 ```json
 {
-    "msg": "请求成功",
-    "code": 400,
-    "data": {
-        "name": [
-            "user info with this name already exists."
-        ]
-    }
+    "msg": "Password is needed",
+    "code": 401
 }
 ```
 
-
+（名称字段为空）
 
 ```json
 {
@@ -98,11 +89,50 @@
 }
 ```
 
+#### 登录
 
+url :/user/login/
+
+请求方式：post
+
+请求参数
+
+| 字段     | 备注     | 是否必须 |
+| -------- | -------- | -------- |
+| name     | 用户名   | 是       |
+| password | 用户密码 | 是       |
+
+返回结果
+
+```json
+{
+    "msg": "Login successful",
+    "code": 200
+}
+```
+
+登录失败（密码不正确）
+
+```json
+{
+    "msg": "Login failure",
+    "code": 401
+}
+```
+
+登录失败（错误的用户名）
+
+```json
+{
+    "msg": "服务器错误:UserInfo matching query does not exist.",
+    "code": 500,
+    "data": {}
+}
+```
 
 #### 获取单个用户信息
 
-- url :/user/<str:username>
+- url :/user/<str:username/>
 
   例如：
 
@@ -150,7 +180,7 @@
 
 #### 更新用户信息
 
-- url：/user/<str:username>
+- url：/user/<str:username>/
 
 - 例如：
 
@@ -205,7 +235,7 @@
 
 #### 删除用户账户
 
-- url：/user/<str:username>
+- url：/user/<str:username/>
 
 - 例如：
 
@@ -296,7 +326,7 @@
 
 #### 注册车次
 
-- URL:/bus/register
+- URL:/bus/register/
 - 请求方式：post
 - 请求参数
 

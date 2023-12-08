@@ -6,7 +6,7 @@ from django.db import models
 class UserInfo(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=32, unique=True)
-    password = models.CharField(max_length=64)
+    password = models.CharField(max_length=88)
     is_admin = models.BooleanField(default=False, editable=False)
 
 

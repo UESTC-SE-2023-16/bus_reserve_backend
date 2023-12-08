@@ -3,8 +3,11 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http.response import JsonResponse
+from django.contrib.auth.hashers import make_password, check_password
 
 from api import models
+
 
 # Create your views here.
 
@@ -45,16 +48,37 @@ class CheckUserInfo(APIView):
 # 用户注册
 class User_register(APIView):
     def post(self, request):
+        if 'password' in request.data:
+            request.data['password'] = make_password(request.data['password'], None, 'pbkdf2_sha256')
+        else:
+            return JsonResponse({'msg': 'Password is needed', 'code': 400}, status=400)
         serializer = UserInfoSerializer(data=request.data)
         # 校验数据
         if serializer.is_valid():
-            # new_user = models.UserInfo.objects.create(**serializer.validated_data)
             serializer.save()
-            return Response(serializer.data)
+            return JsonResponse({'msg': 'register success', 'code': 200}, status=200)
         else:
             response = Response(serializer.errors)
             response.status_code = 400
             return response
+
+
+# 用户登录
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('name')
+        password = request.data.get('password')
+
+        user = models.UserInfo.objects.get(name=username)
+
+        if user:
+            serializer = UserInfoSerializer(instance=user, many=False)
+            if check_password(password, serializer.data['password']):
+                return JsonResponse({'msg': 'Login successful', 'code': 200}, status=200)
+            else:
+                return JsonResponse({'msg': 'Login failure', 'code': 401}, status=401)
+        else:
+            return JsonResponse({'msg': 'Invalid credentials', 'code': 401}, status=401)
 
 
 # 操作一个用户
@@ -70,6 +94,8 @@ class UserDetailView(APIView):
     def put(self, request, username):
         update_userinfo = models.UserInfo.objects.get(name=username)
         # 序列化器对象
+        if 'password' in request.data:
+            request.data['password'] = make_password(request.data['password'], None, 'pbkdf2_sha256')
         serializer = UserInfoSerializer(instance=update_userinfo, data=request.data, partial=True)
 
         if serializer.is_valid():
