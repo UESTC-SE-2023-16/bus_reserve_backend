@@ -1,8 +1,9 @@
 from loguru import logger
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db import transaction
+
 from api import models
 
 # Create your views here.
@@ -163,14 +164,14 @@ class operate_bus_users:
         bus_serializer["remained_seats"] = bus_serializer["remained_seats"] - 1
         logger.info(bus_serializer["remained_seats"])
         new_bus_serializer = BusInfoSerializer(instance=update_businfo, data=bus_serializer)
-        if new_bus_serializer.is_valid() and bus_serializer['remained_seats'] <= bus_serializer['seats']:
+        if new_bus_serializer.is_valid() and bus_serializer["remained_seats"] <= bus_serializer["seats"]:
             new_bus_serializer.save()
             return Response(new_bus_serializer.data)
         else:
-            if bus_serializer['remained_seats'] <= bus_serializer['seats']:
+            if bus_serializer["remained_seats"] <= bus_serializer["seats"]:
                 response = Response(new_bus_serializer.errors)
             else:
-                response = Response('剩余座位超过额定座位')
+                response = Response("剩余座位超过额定座位")
             response.status_code = 400
             return response
 
@@ -180,14 +181,14 @@ class operate_bus_users:
         bus_serializer = BusInfoSerializer(instance=update_businfo, many=False).data
         bus_serializer["remained_seats"] = bus_serializer["remained_seats"] + 1
         new_bus_serializer = BusInfoSerializer(instance=update_businfo, data=bus_serializer)
-        if new_bus_serializer.is_valid() and bus_serializer['remained_seats'] <= bus_serializer['seats']:
+        if new_bus_serializer.is_valid() and bus_serializer["remained_seats"] <= bus_serializer["seats"]:
             new_bus_serializer.save()
             return Response(new_bus_serializer.data)
         else:
-            if bus_serializer['remained_seats'] <= bus_serializer['seats']:
+            if bus_serializer["remained_seats"] <= bus_serializer["seats"]:
                 response = Response(new_bus_serializer.errors)
             else:
-                response = Response('剩余座位超过额定座位')
+                response = Response("剩余座位超过额定座位")
             response.status_code = 400
             return response
 
