@@ -2,7 +2,7 @@ from loguru import logger
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from django.db import transaction
 from api import models
 
 # Create your views here.
@@ -156,30 +156,38 @@ class BusDetailView(APIView):
 
 
 class operate_bus_users:
+    @transaction.atomic
     def add_users(self, b_id):
-        update_businfo = models.BusInfo.objects.get(id=b_id)
+        update_businfo = models.BusInfo.objects.select_for_update().get(id=b_id)
         bus_serializer = BusInfoSerializer(instance=update_businfo, many=False).data
         bus_serializer["remained_seats"] = bus_serializer["remained_seats"] - 1
         logger.info(bus_serializer["remained_seats"])
         new_bus_serializer = BusInfoSerializer(instance=update_businfo, data=bus_serializer)
-        if new_bus_serializer.is_valid():
+        if new_bus_serializer.is_valid() and bus_serializer['remained_seats'] <= bus_serializer['seats']:
             new_bus_serializer.save()
             return Response(new_bus_serializer.data)
         else:
-            response = Response(new_bus_serializer.errors)
+            if bus_serializer['remained_seats'] <= bus_serializer['seats']:
+                response = Response(new_bus_serializer.errors)
+            else:
+                response = Response('剩余座位超过额定座位')
             response.status_code = 400
             return response
 
+    @transaction.atomic
     def delete_users(self, b_id):
-        update_businfo = models.BusInfo.objects.get(id=b_id)
+        update_businfo = models.BusInfo.objects.select_for_update().get(id=b_id)
         bus_serializer = BusInfoSerializer(instance=update_businfo, many=False).data
         bus_serializer["remained_seats"] = bus_serializer["remained_seats"] + 1
         new_bus_serializer = BusInfoSerializer(instance=update_businfo, data=bus_serializer)
-        if new_bus_serializer.is_valid():
+        if new_bus_serializer.is_valid() and bus_serializer['remained_seats'] <= bus_serializer['seats']:
             new_bus_serializer.save()
             return Response(new_bus_serializer.data)
         else:
-            response = Response(new_bus_serializer.errors)
+            if bus_serializer['remained_seats'] <= bus_serializer['seats']:
+                response = Response(new_bus_serializer.errors)
+            else:
+                response = Response('剩余座位超过额定座位')
             response.status_code = 400
             return response
 
@@ -240,6 +248,7 @@ class TicketDetailView(APIView):
         serializer = TicketInfoSerializer(instance=update_ticketinfo, data=request.data, partial=True)
 
         if serializer.is_valid():
+            serializer.save()
             check_ticketinfo = models.TicketInfo.objects.get(id=t_id)
             ticket_info = TicketInfoSerializer(instance=check_ticketinfo, many=False).data
             if ticket_info["status"] == "F" or ticket_info["status"] == "T" or ticket_info["status"] == "I":
@@ -247,7 +256,6 @@ class TicketDetailView(APIView):
                 response = a.delete_users(b_id=request.data["b_id"])
                 if response.status_code == 400:
                     return response
-            serializer.save()
             return Response(serializer.data)
 
         else:
