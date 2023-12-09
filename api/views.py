@@ -112,7 +112,8 @@ class LoginView(APIView):
         if user:
             serializer = UserInfoSerializer(instance=user, many=False)
             access = AccessToken.for_user(user)
-            data = {"access_token": str(access), "id": serializer.data["id"], "name": serializer.data["name"]}
+            data = {"access_token": str(access), "id": serializer.data["id"], "name": serializer.data["name"],
+                    "is_admin": serializer.data["is_admin"]}
             return Response(data)
         else:
             return Response({"error": "Invalid credentials"}, status=401)
