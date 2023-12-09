@@ -86,7 +86,7 @@ class Authenticate:
 class Permission_check:
     def check(self, request):
         url = "/your-token-verify-url/"
-        data = {"token": request.data["token"]}
+        data = {"token": request.headers["token"]}
         factory = APIRequestFactory()
         request = factory.post(url, data, format="json")
         # 根据响应的状态码判断令牌是否有效
