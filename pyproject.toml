@@ -12,6 +12,7 @@ django4django = "^0.0.2"
 djangorestframework = "^3.14.0"
 loguru = "^0.7.2"
 django-cors-headers = "^4.3.1"
+djangorestframework-simplejwt = "^5.3.1"
 
 
 [tool.poetry.group.lint.dependencies]

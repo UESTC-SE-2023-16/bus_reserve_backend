@@ -4,12 +4,12 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http.response import JsonResponse
-from django.contrib.auth.hashers import make_password, check_password
+from rest_framework.test import APIRequestFactory
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenVerifyView
-from rest_framework.test import APIRequestFactory
-from api import models
+from django.contrib.auth.hashers import make_password, check_password
 
+from api import models
 
 # Create your views here.
 
@@ -55,27 +55,27 @@ class CheckUserInfo(APIView):
 # 用户注册
 class User_register(APIView):
     def post(self, request):
-        if 'password' in request.data:
-            request.data['password'] = make_password(request.data['password'], None, 'pbkdf2_sha256')
+        if "password" in request.data:
+            request.data["password"] = make_password(request.data["password"], None, "pbkdf2_sha256")
         else:
-            return JsonResponse({'msg': 'Password is needed', 'code': 400}, status=400)
+            return JsonResponse({"msg": "Password is needed", "code": 400}, status=400)
         serializer = UserInfoSerializer(data=request.data)
         # 校验数据
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({'msg': 'register success', 'code': 200}, status=200)
+            return JsonResponse({"msg": "register success", "code": 200}, status=200)
         else:
             response = Response(serializer.errors)
             response.status_code = 400
             return response
 
 
-class Authenticate():
+class Authenticate:
     def authenticate(self, name, password):
         user = models.UserInfo.objects.get(name=name)
         if user:
             serializer = UserInfoSerializer(instance=user, many=False)
-            if check_password(password, serializer.data['password']):
+            if check_password(password, serializer.data["password"]):
                 return user
             else:
                 return None
@@ -83,12 +83,12 @@ class Authenticate():
             return None
 
 
-class Permission_check():
+class Permission_check:
     def check(self, request):
-        url = '/your-token-verify-url/'
-        data = {'token': request.data['token']}
+        url = "/your-token-verify-url/"
+        data = {"token": request.data["token"]}
         factory = APIRequestFactory()
-        request = factory.post(url, data, format='json')
+        request = factory.post(url, data, format="json")
         # 根据响应的状态码判断令牌是否有效
         view = TokenVerifyView.as_view()
         response = view(request)
@@ -103,8 +103,8 @@ class Permission_check():
 # 用户登录
 class LoginView(APIView):
     def post(self, request):
-        username = request.data.get('name')
-        password = request.data.get('password')
+        username = request.data.get("name")
+        password = request.data.get("password")
 
         a = Authenticate()
         user = a.authenticate(name=username, password=password)
@@ -112,14 +112,10 @@ class LoginView(APIView):
         if user:
             serializer = UserInfoSerializer(instance=user, many=False)
             access = AccessToken.for_user(user)
-            data = {
-                'access_token': str(access),
-                'id': serializer.data['id'],
-                'name': serializer.data['name']
-            }
+            data = {"access_token": str(access), "id": serializer.data["id"], "name": serializer.data["name"]}
             return Response(data)
         else:
-            return Response({'error': 'Invalid credentials'}, status=401)
+            return Response({"error": "Invalid credentials"}, status=401)
 
 
 # 操作一个用户
@@ -134,7 +130,7 @@ class UserDetailView(APIView):
             return response
         user = models.UserInfo.objects.get(name=username)
         user_data = UserInfoSerializer(instance=user, many=False).data
-        user_data.pop('password')
+        user_data.pop("password")
         return Response(user_data)
 
     # 更新用户信息
@@ -146,15 +142,15 @@ class UserDetailView(APIView):
             return response
         update_userinfo = models.UserInfo.objects.get(name=username)
         # 序列化器对象
-        if 'password' in request.data:
-            request.data['password'] = make_password(request.data['password'], None, 'pbkdf2_sha256')
+        if "password" in request.data:
+            request.data["password"] = make_password(request.data["password"], None, "pbkdf2_sha256")
         serializer = UserInfoSerializer(instance=update_userinfo, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
             user = models.UserInfo.objects.get(name=username)
             user_data = UserInfoSerializer(instance=user, many=False).data
-            user_data.pop('password')
+            user_data.pop("password")
             return Response(user_data)
 
         else:
