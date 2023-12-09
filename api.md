@@ -117,9 +117,10 @@ url :/user/login/
     "msg": "请求成功",
     "code": 200,
     "data": {
-        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyMTExNjAyLCJpYXQiOjE3MDIxMTA3MDIsImp0aSI6ImIzM2RjMDk0MjYzMjRiZjA5NjgwMjE5OTI1ZjQwOWEwIiwidXNlcl9pZCI6Mjl9.OvntNRI9Ql6w59rN85adhSZCRjoSbdlhgYledozzZ-s",
-        "id": 29,
-        "name": "asdf"
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyMTM3NTc1LCJpYXQiOjE3MDIxMzY2NzUsImp0aSI6Ijg0MjQ3M2MzMzVlMTRjM2ZhNmFhYjMzMjEzMDI4ZWE0IiwidXNlcl9pZCI6MzF9.ShL9L4SLv-VYNuuATF7jKx86D3U36cwfiAs6oW2mpGA",
+        "id": 31,
+        "name": "asdf",
+        "is_admin": false
     }
 }
 ```
