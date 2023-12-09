@@ -4,11 +4,21 @@
 
 ****
 
-#### 查看所有用户
+#### 查看所有用户（token）
 
 - URL：/user/getUserInfo/
+
 - 请求方式：get
-- 请求参数：无
+
+- **请求参数：**
+
+  ```JSON
+  {
+  	"token":"XXX"
+  }
+  ```
+
+  
 
 - 返回结果：
 
@@ -39,7 +49,7 @@
 
 #### 注册用户
 
-- URL:/user/register
+- URL:/user/register/
 - 请求方式：post
 - 请求参数
 
@@ -106,8 +116,13 @@ url :/user/login/
 
 ```json
 {
-    "msg": "Login successful",
-    "code": 200
+    "msg": "请求成功",
+    "code": 200,
+    "data": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyMTExNjAyLCJpYXQiOjE3MDIxMTA3MDIsImp0aSI6ImIzM2RjMDk0MjYzMjRiZjA5NjgwMjE5OTI1ZjQwOWEwIiwidXNlcl9pZCI6Mjl9.OvntNRI9Ql6w59rN85adhSZCRjoSbdlhgYledozzZ-s",
+        "id": 29,
+        "name": "asdf"
+    }
 }
 ```
 
@@ -115,8 +130,11 @@ url :/user/login/
 
 ```json
 {
-    "msg": "Login failure",
-    "code": 400
+    "msg": "请求成功",
+    "code": 401,
+    "data": {
+        "error": "Invalid credentials"
+    }
 }
 ```
 
@@ -130,7 +148,7 @@ url :/user/login/
 }
 ```
 
-#### 获取单个用户信息
+#### 获取单个用户信息(token)
 
 - url :/user/<str:username/>
 
@@ -142,25 +160,32 @@ url :/user/login/
 
 - 请求方式：get
 
-- 无参数
+- 参数
+
+  ```json
+  {
+  	"token":"XXX"
+  }
+  ```
+
+  
 
 - 返回结果
 
-|   字段   |      备注      |
-| :------: | :------------: |
-|    id    | 自动生成自增id |
-|   name   |      名称      |
-| password |      密码      |
-| is_admin |   false/true   |
+|     字段     |      备注      |
+| :----------: | :------------: |
+|      id      | 自动生成自增id |
+|     name     |      名称      |
+| ~~password~~ |    ~~密码~~    |
+|   is_admin   |   false/true   |
 
 ```json
 {
     "msg": "请求成功",
     "code": 200,
     "data": {
-        "id": 24,
-        "name": "GAO",
-        "password": "4631566",
+        "id": 29,
+        "name": "asdf",
         "is_admin": false
     }
 }
@@ -178,7 +203,7 @@ url :/user/login/
 
 
 
-#### 更新用户信息
+#### 更新用户信息(token)
 
 - url：/user/<str:username>/
 
@@ -192,28 +217,28 @@ url :/user/login/
 
 - 请求参数
 
-|   字段   |   备注   | 是否必须 |
-| :------: | :------: | :------: |
-|   name   |  用户名  |    是    |
-| password | 用户密码 |    是    |
+|   字段    |   备注    | 是否必须 |
+| :-------: | :-------: | :------: |
+|   name    |  用户名   |    否    |
+| password  | 用户密码  |    否    |
+| **token** | **token** |  **是**  |
 
 - 返回结果
 
-|   字段   |      备注      |
-| :------: | :------------: |
-|    id    | 自动生成自增id |
-|   name   |      名称      |
-| password |      密码      |
-| is_admin |   false/true   |
+|     字段     |      备注      |
+| :----------: | :------------: |
+|      id      | 自动生成自增id |
+|     name     |      名称      |
+| ~~password~~ |    ~~密码~~    |
+|   is_admin   |   false/true   |
 
 ```json
 {
     "msg": "请求成功",
     "code": 200,
     "data": {
-        "id": 24,
-        "name": "GAO",
-        "password": "789456",
+        "id": 2,
+        "name": "zhao1",
         "is_admin": false
     }
 }
@@ -222,18 +247,14 @@ url :/user/login/
 ```json
 {
     "msg": "请求成功",
-    "code": 400,
-    "data": {
-        "password": [
-            "This field may not be blank."
-        ]
-    }
+    "code": 401,
+    "data": "unauthenticated users"
 }
 ```
 
 
 
-#### 删除用户账户
+#### 删除用户账户(token)
 
 - url：/user/<str:username/>
 
@@ -245,7 +266,15 @@ url :/user/login/
 
 - 请求方式：delete
 
-- 请求参数：无
+- 请求参数
+
+  ```json
+  {
+  	"token":"XXX"
+  }
+  ```
+
+  
 
 - 返回结果
 
@@ -569,7 +598,7 @@ url :/user/login/
 
 状态为F、T、I时不占用座位
 
-#### 查看用户对应的车票
+#### 查看用户对应的车票(token)
 
 - URL：ticket/getUserTicketInfo/<str:u_id>/
 
@@ -581,7 +610,15 @@ url :/user/login/
 
 - 请求方式：get
 
-- 请求参数：无
+- **请求参数**
+
+  ```json
+  {
+  	"token":"XXX"
+  }
+  ```
+
+  
 
 - 返回结果：
 
@@ -671,17 +708,18 @@ url :/user/login/
 }
 ```
 
-#### 注册车票
+#### 注册车票(token)
 
 - URL:/ticket/register/
 - 请求方式：post
 - 请求参数
 
-|  字段  |  备注  |                           是否必须                           |
-| :----: | :----: | :----------------------------------------------------------: |
-|  b_id  | 车辆id |                 用户表外键，用户表中必须存在                 |
-|  u_id  | 用户id |                 车次表外键，车次表中必须存在                 |
-| status |  状态  | **使用本接口时，设定为S（提交）、N（已支付）符合逻辑，不输入默认S** |
+|   字段    |   备注    |                           是否必须                           |
+| :-------: | :-------: | :----------------------------------------------------------: |
+|   b_id    |  车辆id   |                 用户表外键，用户表中必须存在                 |
+|   u_id    |  用户id   |                 车次表外键，车次表中必须存在                 |
+|  status   |   状态    | **使用本接口时，设定为S（提交）、N（已支付）符合逻辑，不输入默认S** |
+| **token** | **token** |                            **是**                            |
 
 - 返回结果：
 
@@ -733,9 +771,19 @@ url :/user/login/
 }
 ```
 
+没有权限
+
+```json
+{
+    "msg": "请求成功",
+    "code": 401,
+    "data": "unauthenticated users"
+}
+```
 
 
-#### 获取单个车票信息
+
+#### 获取单个车票信息(token)
 
 - url:/ticket/<str:t_id>/
 
@@ -747,7 +795,13 @@ url :/user/login/
 
 - 请求方式：get
 
-- 无参数
+- 参数
+
+  ```json
+  {
+  	"token":"XXX"
+  }
+  ```
 
 - 返回结果
 
@@ -781,9 +835,19 @@ url :/user/login/
 }
 ```
 
+没有权限：
+
+```json
+{
+    "msg": "请求成功",
+    "code": 401,
+    "data": "unauthenticated users"
+}
+```
 
 
-#### 更新车票信息（更改状态）
+
+#### 更新车票信息（更改状态）(token)
 
 对于状态的更新，如下的改变符合逻辑：
 
@@ -804,11 +868,12 @@ url :/user/login/
 
 - 请求参数
 
-|  字段  |  备注  |           是否必须           |
-| :----: | :----: | :--------------------------: |
-|  b_id  | 车辆id | 用户表外键，用户表中必须存在 |
-|  u_id  | 用户id | 车次表外键，车次表中必须存在 |
-| status |  状态  |     不必须，不输入不更改     |
+|   字段    |   备注    |       是否必须       |
+| :-------: | :-------: | :------------------: |
+|   b_id    |  车辆id   |          否          |
+|   u_id    |  用户id   |          否          |
+|  status   |   状态    | 不必须，不输入不更改 |
+| **token** | **token** |        **是**        |
 
 - 返回结果
 
@@ -846,9 +911,19 @@ url :/user/login/
 }
 ```
 
+没有权限：
+
+```json
+{
+    "msg": "请求成功",
+    "code": 401,
+    "data": "unauthenticated users"
+}
+```
 
 
-#### 删除车票（将车票从数据库中删除而不是标记为T：取消）
+
+#### 删除车票（将车票从数据库中删除而不是标记为T：取消）(token)
 
 - url:/ticket/<str:t_id>/
 
@@ -860,7 +935,15 @@ url :/user/login/
 
 - 请求方式：delete
 
-- 请求参数：无
+- 请求参数
+
+  ```json
+  {
+  	"token":"XXX"
+  }
+  ```
+
+  
 
 - 返回结果
 
@@ -872,7 +955,15 @@ url :/user/login/
 }
 ```
 
+没有权限：
 
+```json
+{
+    "msg": "请求成功",
+    "code": 401,
+    "data": "unauthenticated users"
+}
+```
 
 
 

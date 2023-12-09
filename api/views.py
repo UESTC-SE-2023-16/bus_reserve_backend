@@ -5,7 +5,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http.response import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
-
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.views import TokenVerifyView
+from rest_framework.test import APIRequestFactory
 from api import models
 
 
@@ -38,6 +40,11 @@ class TicketInfoSerializer(serializers.ModelSerializer):
 # 查询所有用户信息
 class CheckUserInfo(APIView):
     def get(self, request):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         logger.debug(request.user)
         user_list = models.UserInfo.objects.all()
 
@@ -63,22 +70,56 @@ class User_register(APIView):
             return response
 
 
+class Authenticate():
+    def authenticate(self, name, password):
+        user = models.UserInfo.objects.get(name=name)
+        if user:
+            serializer = UserInfoSerializer(instance=user, many=False)
+            if check_password(password, serializer.data['password']):
+                return user
+            else:
+                return None
+        else:
+            return None
+
+
+class Permission_check():
+    def check(self, request):
+        url = '/your-token-verify-url/'
+        data = {'token': request.data['token']}
+        factory = APIRequestFactory()
+        request = factory.post(url, data, format='json')
+        # 根据响应的状态码判断令牌是否有效
+        view = TokenVerifyView.as_view()
+        response = view(request)
+        if response.status_code == 200:
+            # 令牌有效，继续你的逻辑
+            return True
+        else:
+            # 令牌无效，返回错误信息
+            return False
+
+
 # 用户登录
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get('name')
         password = request.data.get('password')
 
-        user = models.UserInfo.objects.get(name=username)
+        a = Authenticate()
+        user = a.authenticate(name=username, password=password)
 
         if user:
             serializer = UserInfoSerializer(instance=user, many=False)
-            if check_password(password, serializer.data['password']):
-                return JsonResponse({'msg': 'Login successful', 'code': 200}, status=200)
-            else:
-                return JsonResponse({'msg': 'Login failure', 'code': 400}, status=400)
+            access = AccessToken.for_user(user)
+            data = {
+                'access_token': str(access),
+                'id': serializer.data['id'],
+                'name': serializer.data['name']
+            }
+            return Response(data)
         else:
-            return JsonResponse({'msg': 'Invalid credentials', 'code': 400}, status=400)
+            return Response({'error': 'Invalid credentials'}, status=401)
 
 
 # 操作一个用户
@@ -86,12 +127,23 @@ class UserDetailView(APIView):
     # authentication_classes = []
     # 查询一个用户
     def get(self, request, username):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         user = models.UserInfo.objects.get(name=username)
-        serializer = UserInfoSerializer(instance=user, many=False)
-        return Response(serializer.data)
+        user_data = UserInfoSerializer(instance=user, many=False).data
+        user_data.pop('password')
+        return Response(user_data)
 
     # 更新用户信息
     def put(self, request, username):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         update_userinfo = models.UserInfo.objects.get(name=username)
         # 序列化器对象
         if 'password' in request.data:
@@ -100,7 +152,10 @@ class UserDetailView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            user = models.UserInfo.objects.get(name=username)
+            user_data = UserInfoSerializer(instance=user, many=False).data
+            user_data.pop('password')
+            return Response(user_data)
 
         else:
             response = Response(serializer.errors)
@@ -109,6 +164,11 @@ class UserDetailView(APIView):
 
     # 删除用户
     def delete(self, request, username):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         the_user = models.UserInfo.objects.filter(name=username)
         if len(the_user) == 0:
             response = Response("没有这个用户")
@@ -222,6 +282,11 @@ class operate_bus_users:
 # 查询所有同一用户车票信息
 class CheckUserTicketInfo(APIView):
     def get(self, request, u_id):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         ticket_list = models.TicketInfo.objects.filter(u_id=u_id)
 
         serializer = TicketInfoSerializer(instance=ticket_list, many=True)
@@ -244,6 +309,11 @@ class CheckBusTicketInfo(APIView):
 # 车票注册(状态：S:'提交')
 class Ticket_register(APIView):
     def post(self, request):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         serializer = TicketInfoSerializer(data=request.data)
         # 校验数据
         if serializer.is_valid():
@@ -264,12 +334,22 @@ class Ticket_register(APIView):
 class TicketDetailView(APIView):
     # 查询一个车票
     def get(self, request, t_id):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         bus = models.TicketInfo.objects.get(id=t_id)
         serializer = TicketInfoSerializer(instance=bus, many=False)
         return Response(serializer.data)
 
     # 更新车次信息（更改状态）
     def put(self, request, t_id):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         update_ticketinfo = models.TicketInfo.objects.get(id=t_id)
         # 序列化器对象
         serializer = TicketInfoSerializer(instance=update_ticketinfo, data=request.data, partial=True)
@@ -292,6 +372,11 @@ class TicketDetailView(APIView):
 
     # 删除车票信息
     def delete(self, request, t_id):
+        a = Permission_check()
+        if not a.check(request):
+            response = Response("unauthenticated users")
+            response.status_code = 401
+            return response
         ticket_model = models.TicketInfo.objects.get(id=t_id)
 
         ticket_info = TicketInfoSerializer(instance=ticket_model, many=False).data

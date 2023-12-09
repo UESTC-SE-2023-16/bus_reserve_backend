@@ -18,10 +18,12 @@ Including another URLconf
 from api import views
 from django.urls import path
 from django.contrib import admin
+from rest_framework_simplejwt.views import (TokenVerifyView)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('user/login/', views.LoginView.as_view()),
+    path('user/verify/', TokenVerifyView.as_view()),
     path("user/getUserInfo/", views.CheckUserInfo.as_view()),
     path("user/register/", views.User_register.as_view()),
     path("user/<str:username>/", views.UserDetailView.as_view()),

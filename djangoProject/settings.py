@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'rest_framework_simplejwt',
     "api.apps.ApiConfig",
     "corsheaders",
 ]
@@ -95,6 +97,22 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "utils.exception.custom_exception_handler",
     # 修改默认返回JSON的renderer的类
     "DEFAULT_RENDERER_CLASSES": ("utils.rendererresponse.customrenderer",),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # ...
+    ),
+}
+
+AUTHENTICATION_BACKENDS = [
+    'api.views.Authenticate',
+    'django.contrib.auth.backends.ModelBackend',
+    # ...
+]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
 
