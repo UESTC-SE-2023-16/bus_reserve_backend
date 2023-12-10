@@ -149,7 +149,8 @@ class UserDetailView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            user = models.UserInfo.objects.get(name=username)
+            update_user = UserInfoSerializer(instance=update_userinfo, many=False)
+            user = models.UserInfo.objects.get(id=update_user.data['id'])
             user_data = UserInfoSerializer(instance=user, many=False).data
             user_data.pop("password")
             return Response(user_data)
