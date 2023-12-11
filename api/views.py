@@ -422,7 +422,7 @@ class TicketDetailView(APIView):
             # 如果车票状态为已完成、已退款或已失效，则调用删除用户从车次中的方法
             if ticket_info["status"] == "F" or ticket_info["status"] == "T" or ticket_info["status"] == "I":
                 a = operate_bus_users()
-                response = a.delete_users(b_id=request.data["b_id"])
+                response = a.delete_users(b_id=ticket_info["b_id"])
                 if response.status_code == 400:
                     return response
             return Response(serializer.data)
